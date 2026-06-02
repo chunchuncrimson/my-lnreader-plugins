@@ -25,6 +25,10 @@ https://raw.githubusercontent.com/chunchuncrimson/my-lnreader-plugins/plugins/v3
 * Plugin availability depends on the availability of the source websites.
 * Some plugins may become unavailable if the corresponding website changes or goes offline.
 
+## Development Notes
+
+This repository incorporates code and modifications produced with the assistance of Manus AI during plugin development. AI-generated output may be adapted, reviewed, or refined prior to release.
+
 ## Disclaimer
 
 This repository is an independently maintained fork of the LNReader plugin ecosystem and is intended to provide additional community-maintained sources.
