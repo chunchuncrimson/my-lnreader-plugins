@@ -8,7 +8,7 @@ class WattpadPlugin implements Plugin.PluginBase {
   name = 'Wattpad';
   icon = 'plugins/english/wattpad/icon.png';
   site = 'https://www.wattpad.com';
-  version = '1.1.0';
+  version = '1.1.1';
 
   async popularNovels(
     pageNo: number,
