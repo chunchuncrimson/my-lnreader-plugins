@@ -19,7 +19,7 @@ https://raw.githubusercontent.com/chunchuncrimson/my-lnreader-plugins/plugins/v3
 
 ## Notes
 
-* Primarily created to support WorldEnd / SukaSuka readers.
+* Primarily created for personally-made plugins
 * Additional novel sources may be added in future releases.
 * Not an official LNReader repository.
 * Plugin availability depends on the availability of the source websites.
