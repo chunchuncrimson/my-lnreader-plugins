@@ -71,9 +71,12 @@ class WattpadPlugin implements Plugin.PluginBase {
   async parseChapter(chapterPath: string): Promise<string> {
     const url = `${this.site}/apiv2/storytext?id=${chapterPath}`;
     const res = await fetchApi(url);
-    const data = await res.json();
 
-    return `<div>${data.body}</div>`;
+    const text = await res.text();
+
+    console.log(text);
+
+    return text;
   }
 
   async searchNovels(
