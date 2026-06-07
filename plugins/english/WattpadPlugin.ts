@@ -2,6 +2,7 @@ import { fetchApi } from '@libs/fetch';
 import { Plugin } from '@/types/plugin';
 import { defaultCover } from '@libs/defaultCover';
 import { NovelStatus } from '@libs/novelStatus';
+import * as cheerio from 'cheerio';
 
 class WattpadPlugin implements Plugin.PluginBase {
   id = 'wattpad';
@@ -83,22 +84,28 @@ class WattpadPlugin implements Plugin.PluginBase {
     searchTerm: string,
     pageNo: number,
   ): Promise<Plugin.NovelItem[]> {
-    const offset = (pageNo - 1) * 20;
-    const url = `${this.site}/api/v3/search/stories?q=${encodeURIComponent(searchTerm)}&offset=${offset}&limit=20`;
+    const url = `${this.site}/search/${encodeURIComponent(searchTerm)}?page=${pageNo}`;
 
     const res = await fetchApi(url);
-    const data = await res.json();
+    const html = await res.text();
+
+    const $ = cheerio.load(html);
 
     const novels: Plugin.NovelItem[] = [];
-    if (data.stories) {
-      for (const story of data.stories) {
-        novels.push({
-          name: story.title,
-          path: String(story.id),
-          cover: story.cover || defaultCover,
-        });
-      }
-    }
+
+    $('a.story-card').each((_, el) => {
+      const href = $(el).attr('href');
+      const title = $(el).find('.title').first().text().trim();
+      const cover = $(el).find('img').attr('src') || defaultCover;
+
+      if (!href || !title) return;
+
+      novels.push({
+        name: title,
+        path: href.replace('/story/', ''),
+        cover,
+      });
+    });
 
     return novels;
   }
