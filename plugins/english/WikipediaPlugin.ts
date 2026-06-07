@@ -9,7 +9,7 @@ class WikipediaPlugin implements Plugin.PluginBase {
   name = 'Wikipedia';
   icon = 'plugins/english/wikipedia/icon.png';
   site = 'https://en.wikipedia.org/';
-  version = '1.0.0';
+  version = '1.1.0';
 
   async popularNovels(pageNo: number): Promise<Plugin.NovelItem[]> {
     return []; // Wikipedia doesn't have "popular novels" in the traditional sense
@@ -21,50 +21,33 @@ class WikipediaPlugin implements Plugin.PluginBase {
     const body = await result.text();
     const $ = loadCheerio(body);
 
+    const novelName = $('#firstHeading').text().trim() || 'Untitled';
     const novel: Plugin.SourceNovel = {
       path: novelPath,
-      name: $('#firstHeading').text().trim() || 'Untitled',
+      name: novelName,
       cover: $('.infobox img').first().attr('src') || defaultCover,
       status: NovelStatus.Completed,
       summary: $('.mw-parser-output > p').first().text().trim(),
-      chapters: [],
-    };
-
-    // Treat sections as chapters
-    $('.mw-headline').each((i, el) => {
-      const name = $(el).text().trim();
-      const id = $(el).attr('id') || '';
-      if (name && id) {
-        novel.chapters?.push({
-          name,
-          path: `${novelPath}#${id}`,
+      chapters: [
+        {
+          name: 'Full Article',
+          path: novelPath,
           releaseTime: '',
-          chapterNumber: i + 1,
-        });
-      }
-    });
+          chapterNumber: 1,
+        },
+      ],
+    };
 
     return novel;
   }
 
   async parseChapter(chapterPath: string): Promise<string> {
-    const [path, hash] = chapterPath.split('#');
-    const url = this.site + path;
+    const url = this.site + chapterPath;
     const result = await fetchApi(url);
     const body = await result.text();
     const $ = loadCheerio(body);
 
-    if (hash) {
-      const section = $(`#${hash}`).parent();
-      let content = '';
-      let next = section.next();
-      while (next.length && !next.is('h1, h2, h3, h4, h5, h6')) {
-        content += next.html();
-        next = next.next();
-      }
-      return content;
-    }
-
+    // Return the full article content
     return $('.mw-parser-output').html() || '';
   }
 
@@ -74,12 +57,14 @@ class WikipediaPlugin implements Plugin.PluginBase {
     const data = await result.json();
 
     const novels: Plugin.NovelItem[] = [];
-    for (let i = 0; i < data[1].length; i++) {
-      novels.push({
-        name: data[1][i],
-        path: `wiki/${data[1][i].replace(/ /g, '_')}`,
-        cover: defaultCover,
-      });
+    if (data && data[1]) {
+      for (let i = 0; i < data[1].length; i++) {
+        novels.push({
+          name: data[1][i],
+          path: `wiki/${data[1][i].replace(/ /g, '_')}`,
+          cover: defaultCover,
+        });
+      }
     }
 
     return novels;
