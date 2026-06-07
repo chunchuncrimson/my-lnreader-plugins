@@ -2,12 +2,9 @@
 
 A custom LNReader plugin repository containing community-maintained sources for light novels and web novels.
 
-Current focus:
-
-* WorldEnd / SukaSuka extensions
-* Fan translation sources
-* Archive and mirror sources
-* Related side stories and supplementary content
+List of Plugins (excluding official):
+* ArchiveOrg
+* Wattpad
 
 Additional plugins and sources may be added over time.
 
